@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Waste or Mosquito Breeding</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Report an Issue</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="report.html">Report</a>
+      <a href="view-reports.html">View Reports</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Submit a Report</h2>
+      <form id="reportForm">
+        <label for="name">Your Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="location">Location of Issue:</label><br>
+        <input type="text" id="location" name="location" required><br><br>
+
+        <label for="type">Type of Issue:</label><br>
+        <select id="type" name="type" required>
+          <option value="">--Select--</option>
+          <option value="Garbage Dump">Garbage Dump</option>
+          <option value="Stagnant Water">Stagnant Water</option>
+          <option value="Both">Both</option>
+        </select><br><br>
+
+        <label for="description">Description (optional):</label><br>
+        <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+
+        <label for="image">Upload Image (optional):</label><br>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
+
+        <button type="submit">Submit Report</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Waste Control Team</p>
+  </footer>
+  <!-- Toast message -->
+<div id="toast" class="toast">Report submitted successfully!</div>
+<script src="js/main.js"></script>
+</body>
+</html>
