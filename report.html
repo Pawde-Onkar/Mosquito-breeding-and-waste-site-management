@@ -1,56 +1,478 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Report Waste or Mosquito Breeding</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Report Environmental Issue</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f4f7f8;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --primary:#0f1724; /* dark text */
+      --accent:#10b981;  /* green */
+      --blue:#1f4f8b;    /* gps / cancel */
+      --danger:#dc2626;
+      --radius:10px;
+      --shadow: 0 6px 20px rgba(16,24,40,0.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:var(--bg);
+      color:var(--primary);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:28px 18px;
+    }
+
+    /* Header band */
+    .page-header{
+      width:100%;
+      max-width:900px;
+      background:linear-gradient(180deg, rgba(16,185,129,0.08), rgba(255,255,255,0));
+      border-radius:8px;
+      padding:18px 22px;
+      text-align:center;
+      margin-bottom:18px;
+    }
+    .page-header h1{margin:0;font-weight:700;font-size:20px}
+    .page-header p{margin:6px 0 0;color:var(--muted);font-size:13px;max-width:680px;margin-left:auto;margin-right:auto}
+
+    /* Card */
+    .card{
+      width:100%;
+      max-width:680px;
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      padding:18px;
+      border:1px solid rgba(15,23,36,0.06);
+    }
+
+    .row{display:flex;gap:12px;align-items:center}
+    .col{flex:1}
+    label{display:block;font-size:13px;margin-bottom:8px;color:#111827;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+
+    input[type="text"], textarea, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid #e6eef2;
+      background:#fbfeff;
+      font-size:14px;
+      color:var(--primary);
+    }
+    textarea{min-height:76px; resize:vertical}
+
+    /* progress */
+    .progress-wrap{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .progress-bar{height:8px;background:#e6eef2;border-radius:99px;flex:1;margin-left:12px;margin-right:12px;overflow:hidden}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#34d399);transition:width .35s ease}
+
+    .char-count{font-size:12px;color:var(--muted);margin-top:6px}
+
+    /* category cards */
+    .category-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .cat{
+      background:#ffffff;border-radius:10px;border:1px solid #e6eef2;padding:12px;display:flex;gap:10px;align-items:center;cursor:pointer;
+      transition:all .18s ease;
+    }
+    .cat .icon{width:34px;height:34px;border-radius:8px;background:#f1f8f6;border:1px solid rgba(16,185,129,0.06);display:flex;align-items:center;justify-content:center;color:#0ea65f}
+    .cat h3{margin:0;font-size:14px;font-weight:600}
+    .cat p{margin:0;font-size:12px;color:var(--muted)}
+    .cat.selected{border-color:rgba(16,185,129,0.22);box-shadow:0 6px 18px rgba(16,185,129,0.06);background:linear-gradient(180deg, rgba(16,185,129,0.03), #ffffff)}
+
+    /* right-arrow/select icons */
+    .select-arrow{display:inline-block;padding:8px;border-radius:8px;background:#fff;border:1px solid #e6eef2;text-align:center;cursor:pointer}
+
+    /* address and gps */
+    .gps-btn{background:var(--blue);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .gps-btn:active{transform:translateY(1px)}
+
+    /* lat/lng boxes */
+    .coords{display:flex;gap:12px}
+    .coords input{flex:1}
+
+    /* upload area */
+    .upload-area{
+      border:2px dashed #dbeef0;border-radius:10px;padding:18px;text-align:center;color:var(--muted);background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9));
+    }
+    .preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .preview-item{position:relative;border-radius:8px;overflow:hidden}
+    .preview-item img{display:block;width:100%;height:80px;object-fit:cover}
+    .preview-item .rm{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:#fff;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer}
+
+    /* buttons row */
+    .actions{display:flex;gap:12px;margin-top:16px}
+    .btn{padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+    .btn-cancel{background:var(--blue);color:#fff}
+    .btn-submit{flex:1;background:linear-gradient(180deg,#34d399,#10b981);color:#064e3b}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;z-index:120}
+    .modal{background:#fff;padding:18px;border-radius:10px;min-width:300px;box-shadow:0 12px 40px rgba(2,6,23,0.35);text-align:center}
+    .modal .ok-ico{width:56px;height:56px;border-radius:28px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+    .modal h3{margin:6px 0 4px;font-size:17px}
+    .modal p{color:var(--muted);font-size:13px;margin:0 0 12px}
+    .modal .close-btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer}
+
+    /* small */
+    .small{font-size:12px;color:var(--muted)}
+    .hidden{display:none}
+
+    @media (max-width:520px){
+      .card{padding:14px}
+      .preview-item img{height:60px}
+      .category-grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Report an Issue</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="report.html">Report</a>
-      <a href="view-reports.html">View Reports</a>
-    </nav>
-  </header>
 
-  <main>
-    <section>
-      <h2>Submit a Report</h2>
-      <form id="reportForm">
-        <label for="name">Your Name:</label><br>
-        <input type="text" id="name" name="name" required><br><br>
+  <div class="page-header">
+    <h1>Report Environmental Issue</h1>
+    <p>Help us maintain a healthier community by reporting waste management issues and mosquito breeding sites in your area.</p>
+  </div>
 
-        <label for="location">Location of Issue:</label><br>
-        <input type="text" id="location" name="location" required><br><br>
+  <div class="card" role="main" aria-labelledby="formTitle">
+    <!-- progress -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="small">Progress</div>
+      <div id="progressText" class="small">0% Complete</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar" aria-hidden="true"><div id="progressFill" class="progress-fill"></div></div>
+    </div>
 
-        <label for="type">Type of Issue:</label><br>
-        <select id="type" name="type" required>
-          <option value="">--Select--</option>
-          <option value="Garbage Dump">Garbage Dump</option>
-          <option value="Stagnant Water">Stagnant Water</option>
-          <option value="Both">Both</option>
-        </select><br><br>
+    <form id="reportForm" class="stack" autocomplete="off">
+      <!-- Title -->
+      <div style="margin-top:12px">
+        <label for="title">Title <span class="small" style="color:var(--danger)">*</span></label>
+        <input id="title" name="title" type="text" placeholder="Brief issue title" maxlength="100" />
+        <div class="char-count"><span id="titleCount">0</span>/100</div>
+      </div>
 
-        <label for="description">Description (optional):</label><br>
-        <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+      <!-- Description -->
+      <div>
+        <label for="description">Description <span class="small" style="color:var(--danger)">*</span></label>
+        <textarea id="description" name="description" placeholder="Describe the issue..." maxlength="500"></textarea>
+        <div class="char-count"><span id="descCount">0</span>/500</div>
+      </div>
 
-        <label for="image">Upload Image (optional):</label><br>
-        <input type="file" id="image" name="image" accept="image/*"><br><br>
+      <!-- Category -->
+      <div>
+        <label>Issue Category <span class="small" style="color:var(--danger)">*</span></label>
+        <div class="category-grid" id="categoryGrid" role="radiogroup" aria-label="Issue category">
+          <div class="cat" data-value="waste" tabindex="0" role="radio" aria-checked="false">
+            <div class="icon">🗑️</div>
+            <div>
+              <h3>Waste Management</h3>
+              <p>Overflowing bins, litter</p>
+            </div>
+          </div>
+          <div class="cat" data-value="mosquito" tabindex="0" role="radio" aria-checked="false">
+            <div class="icon">🫧</div>
+            <div>
+              <h3>Mosquito Breeding</h3>
+              <p>Standing water, breeding sites</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <button type="submit">Submit Report</button>
-      </form>
-    </section>
-  </main>
+      <!-- Severity -->
+      <div>
+        <label for="severity">Severity <span class="small" style="color:var(--danger)">*</span></label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <select id="severity" name="severity">
+            <option value="">Select Severity</option>
+            <option value="low">Low - Minor</option>
+            <option value="medium">Medium - Needs attention</option>
+            <option value="high">High - Affects community health</option>
+            <option value="critical">Critical - Immediate action</option>
+          </select>
+          <div class="select-arrow" title="dropdown">▾</div>
+        </div>
+      </div>
 
-  <footer>
-    <p>© 2025 Waste Control Team</p>
-  </footer>
-  <!-- Toast message -->
-<div id="toast" class="toast">Report submitted successfully!</div>
-<script src="js/main.js"></script>
+      <!-- Address + GPS -->
+      <div>
+        <label for="address">Address <span class="small" style="color:var(--danger)">*</span></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="address" name="address" type="text" placeholder="Enter address" />
+          <button type="button" id="gpsBtn" class="gps-btn" title="Use GPS">Use GPS</button>
+        </div>
+        <div id="locStatus" class="small hidden" style="margin-top:6px;color:var(--accent)">Location detected successfully!</div>
+      </div>
+
+      <!-- Lat / Long -->
+      <div style="margin-top:8px">
+        <div class="coords">
+          <div><label for="lat" class="small">Latitude</label><input id="lat" name="lat" type="text" placeholder="Auto-detected" readonly/></div>
+          <div><label for="lng" class="small">Longitude</label><input id="lng" name="lng" type="text" placeholder="Auto-detected" readonly/></div>
+        </div>
+      </div>
+
+      <!-- Upload -->
+      <div style="margin-top:12px">
+        <label>Upload Photos</label>
+        <div id="uploadArea" class="upload-area" tabindex="0">
+          Click or drop photos here (max 3)
+          <input id="photoInput" type="file" accept="image/*" multiple style="display:none" />
+        </div>
+        <div id="previewContainer" class="preview-grid hidden" aria-live="polite"></div>
+      </div>
+
+      <!-- actions -->
+      <div class="actions">
+        <button type="button" class="btn btn-cancel" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-submit" id="submitBtn" disabled><span id="submitLabel">Submit</span></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- success modal -->
+  <div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="ok-ico">✅</div>
+      <h3>Report Submitted!</h3>
+      <p>Thank you for your contribution.</p>
+      <button class="close-btn" id="closeModal">Close</button>
+    </div>
+  </div>
+
+  <!-- ===== single module script - merged & corrected ===== -->
+  <script type="module">
+    // CHANGE THIS to where your shared firebase.js file lives.
+    // If firebase.js is in same folder: './firebase.js'
+    // If in js subfolder: './js/firebase.js'
+    import { saveReport } from './js/firebase.js';
+
+    // DOM references (single set, no duplicates)
+    const form = document.getElementById('reportForm');
+    const titleEl = document.getElementById('title');
+    const descEl = document.getElementById('description');
+    const titleCount = document.getElementById('titleCount');
+    const descCount = document.getElementById('descCount');
+    const categoryGrid = document.getElementById('categoryGrid');
+    const categories = Array.from(categoryGrid.querySelectorAll('.cat'));
+    const severityEl = document.getElementById('severity');
+    const addressEl = document.getElementById('address');
+    const gpsBtn = document.getElementById('gpsBtn');
+    const latEl = document.getElementById('lat');
+    const lngEl = document.getElementById('lng');
+    const locStatus = document.getElementById('locStatus');
+    const uploadArea = document.getElementById('uploadArea');
+    const photoInput = document.getElementById('photoInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitLabel = document.getElementById('submitLabel');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+
+    // state
+    let selectedCategory = null;
+    let selectedFiles = [];
+
+    // Counters
+    function updateCounters(){
+      titleCount.textContent = titleEl.value.length;
+      descCount.textContent = descEl.value.length;
+    }
+    titleEl.addEventListener('input', ()=>{ updateCounters(); updateProgress(); });
+    descEl.addEventListener('input', ()=>{ updateCounters(); updateProgress(); });
+
+    // category selection (single handler)
+    categories.forEach(cat=>{
+      cat.addEventListener('click', ()=> selectCategory(cat));
+      cat.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); selectCategory(cat); } });
+    });
+
+    function selectCategory(cat){
+      categories.forEach(c=>{ c.classList.remove('selected'); c.setAttribute('aria-checked','false'); });
+      cat.classList.add('selected');
+      cat.setAttribute('aria-checked','true');
+      selectedCategory = cat.dataset.value;
+      updateProgress();
+    }
+
+    // GPS button
+    gpsBtn.addEventListener('click', ()=>{
+      gpsBtn.disabled = true;
+      gpsBtn.textContent = 'Getting...';
+      locStatus.classList.add('hidden');
+
+      if(!navigator.geolocation){
+        alert('Geolocation not supported');
+        resetGpsBtn();
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(pos=>{
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        latEl.value = lat; lngEl.value = lng;
+        addressEl.value = `Location: ${lat}, ${lng}`;
+        locStatus.classList.remove('hidden');
+        locStatus.textContent = 'Location detected successfully!';
+        gpsBtn.textContent = 'Use GPS';
+        gpsBtn.disabled = false;
+        updateProgress();
+        setTimeout(()=> locStatus.classList.add('hidden'), 2800);
+      }, err=>{
+        console.error(err);
+        alert('Unable to detect location. Please enter manually.');
+        resetGpsBtn();
+      }, {timeout:10000, maximumAge:60000});
+    });
+
+    function resetGpsBtn(){
+      gpsBtn.disabled = false;
+      gpsBtn.textContent = 'Use GPS';
+    }
+
+    // Upload area handlers
+    uploadArea.addEventListener('click', ()=> photoInput.click());
+    uploadArea.addEventListener('dragover', (e)=>{ e.preventDefault(); uploadArea.style.background='#fbfffb'; });
+    uploadArea.addEventListener('dragleave', ()=>{ uploadArea.style.background=''; });
+    uploadArea.addEventListener('drop', (e)=>{ e.preventDefault(); uploadArea.style.background=''; handleFiles(e.dataTransfer.files); });
+    photoInput.addEventListener('change', (e)=> handleFiles(e.target.files));
+
+    function handleFiles(fileList){
+      const files = Array.from(fileList);
+      for(const f of files){
+        if(selectedFiles.length >= 3){
+          alert('Maximum 3 photos allowed.');
+          break;
+        }
+        if(!f.type.startsWith('image/')) continue;
+        selectedFiles.push(f);
+      }
+      renderPreviews();
+      updateProgress();
+    }
+
+    function renderPreviews(){
+      previewContainer.innerHTML = '';
+      if(selectedFiles.length === 0){ previewContainer.classList.add('hidden'); return; }
+      previewContainer.classList.remove('hidden');
+      selectedFiles.forEach((file, idx)=>{
+        const url = URL.createObjectURL(file);
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `<img src="${url}" alt="${file.name}"><button class="rm" title="Remove" data-idx="${idx}">×</button>`;
+        previewContainer.appendChild(div);
+      });
+      // attach remove handlers
+      previewContainer.querySelectorAll('.rm').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const i = Number(e.currentTarget.dataset.idx);
+          selectedFiles.splice(i,1);
+          renderPreviews();
+          updateProgress();
+        });
+      });
+    }
+
+    // Progress logic (6 discrete steps)
+    function computeSteps(){
+      let n = 0;
+      if(titleEl.value.trim().length) n++;
+      if(descEl.value.trim().length) n++;
+      if(selectedCategory) n++;
+      if(severityEl.value) n++;
+      if(addressEl.value.trim().length || (latEl.value && lngEl.value)) n++;
+      if(selectedFiles.length > 0) n++;
+      return n;
+    }
+
+    function updateProgress(){
+      const steps = 6;
+      const filled = computeSteps();
+      const percent = Math.round((filled / steps) * 100);
+      progressFill.style.width = percent + '%';
+      progressText.textContent = `${percent}% Complete`;
+      const requiredOk = (titleEl.value.trim().length && descEl.value.trim().length && selectedCategory && severityEl.value && (addressEl.value.trim().length || (latEl.value && lngEl.value)));
+      submitBtn.disabled = !requiredOk;
+    }
+
+    // initial
+    updateCounters(); updateProgress();
+
+    // severity/address listeners
+    severityEl.addEventListener('change', updateProgress);
+    addressEl.addEventListener('input', ()=>{ updateProgress(); });
+
+    // form submit -> uses saveReport from firebase.js
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(submitBtn.disabled) return;
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Submitting...';
+
+      const filesToUpload = selectedFiles.slice(); // File objects
+      const report = {
+        title: titleEl.value.trim(),
+        description: descEl.value.trim(),
+        category: selectedCategory || '',
+        severity: severityEl.value || '',
+        address: addressEl.value.trim(),
+        latitude: latEl.value || null,
+        longitude: lngEl.value || null
+      };
+
+      try {
+        // saveReport uploads files and writes Firestore doc (firebase.js must export it)
+        const result = await saveReport(report, filesToUpload, (fileIndex, percent)=>{
+          // optional: you can show per-file percent here
+          // console.log('upload', fileIndex, percent);
+        });
+
+        console.log('Saved report id:', result.id);
+
+        // show modal
+        modal.classList.remove('hidden');
+
+        // reset UI
+        form.reset();
+        selectedCategory = null;
+        categories.forEach(c=>c.classList.remove('selected'));
+        selectedFiles = [];
+        renderPreviews();
+        updateCounters();
+        updateProgress();
+      } catch (err) {
+        console.error(err);
+        alert('Submit error: ' + (err.message || err));
+      } finally {
+        submitLabel.textContent = 'Submit';
+        submitBtn.disabled = true; // keep disabled until form valid again
+      }
+    });
+
+    // modal and cancel handlers
+    closeModal.addEventListener('click', ()=>{ modal.classList.add('hidden'); });
+    cancelBtn.addEventListener('click', ()=>{ history.back(); });
+
+    // small helper to open severity select when caret clicked (if you add caret elements)
+    document.querySelectorAll('.select-arrow').forEach(el=>{
+      el.addEventListener('click', ()=> severityEl.focus());
+    });
+
+  </script>
+
 </body>
 </html>
