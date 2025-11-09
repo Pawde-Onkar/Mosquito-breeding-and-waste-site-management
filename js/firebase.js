@@ -1,48 +1,56 @@
-
-// ✅ firebase.js
-
+// js/firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, addDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// ✅ your Firebase config (keep yours here)
 const firebaseConfig = {
   apiKey: "AIzaSyC_YaGTyQbCkRbdLlKBiyw8lHyxPTa9G9o",
   authDomain: "eco-clean-7bd6d.firebaseapp.com",
   projectId: "eco-clean-7bd6d",
-  storageBucket: "eco-clean-7bd6d.firebasestorage.app",
+  storageBucket: "eco-clean-7bd6d.appspot.com",
   messagingSenderId: "31293808247",
   appId: "1:31293808247:web:3eb83b37ff745007b2b072",
   measurementId: "G-P76NB77KVS"
 };
-
-
-// ✅ Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const storage = getStorage(app);
+export const db = getFirestore(app);
 
-// ✅ Function to save report
-async function saveReport(reportData, imageFile) {
-  try {
-    let imageUrl = "";
-    if (imageFile) {
-      const storageRef = ref(storage, `reports/${Date.now()}_${imageFile.name}`);
-      await uploadBytes(storageRef, imageFile);
-      imageUrl = await getDownloadURL(storageRef);
-    }
-
-    await addDoc(collection(db, "reports"), {
-      ...reportData,
-      images: imageUrl ? [imageUrl] : [],
-      createdAt: new Date().toISOString(),
-    });
-
-    alert("Report submitted successfully!");
-  } catch (error) {
-    console.error("Error saving report:", error);
-    alert("Failed to submit report.");
-  }
+// 🧩 Convert File → Base64
+function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
 }
 
-// ✅ Export what’s needed
-export { app, db, saveReport };
+// 🧩 Save report (with Base64 images)
+export async function saveReport(reportData, files, onProgress) {
+  try {
+    const base64Images = [];
+    for (let i = 0; i < files.length; i++) {
+      const base64 = await convertToBase64(files[i]);
+      base64Images.push(base64);
+      if (onProgress) onProgress(i, 100); // simulate 100% progress per image
+    }
+
+    const docRef = await addDoc(collection(db, "reports"), {
+      ...reportData,
+      images: base64Images,
+      createdAt: serverTimestamp()
+    });
+
+    console.log("✅ Report saved with ID:", docRef.id);
+    return docRef;
+  } catch (error) {
+    console.error("❌ Error saving report:", error);
+    throw error;
+  }
+}

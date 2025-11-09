@@ -1,7 +1,5 @@
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { app } from "./firebase.js";
-
-const db = getFirestore(app);
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase.js";
 
 const reportsContainer = document.getElementById("reportsContainer");
 const filterCategory = document.getElementById("filterCategory");
@@ -18,11 +16,15 @@ const reportsPerPage = 5;
 async function loadReports() {
   reportsContainer.innerHTML = "<p>Loading reports...</p>";
 
-  const querySnapshot = await getDocs(collection(db, "reports"));
-  reports = [];
-  querySnapshot.forEach(doc => reports.push({ id: doc.id, ...doc.data() }));
-
-  renderPage();
+  try {
+    const querySnapshot = await getDocs(collection(db, "reports"));
+    reports = [];
+    querySnapshot.forEach(doc => reports.push({ id: doc.id, ...doc.data() }));
+    renderPage();
+  } catch (error) {
+    console.error("Error loading reports:", error);
+    reportsContainer.innerHTML = "<p>⚠️ Failed to load reports. Check console for details.</p>";
+  }
 }
 
 // 🔹 Render a page of reports
@@ -50,11 +52,13 @@ function renderPage() {
     const status = report.status || "Pending";
     const severity = report.severity || "Low";
 
-    // ✅ Convert Firestore timestamp to readable format
+    // ✅ Format timestamp
     let formattedDate = "";
     if (report.createdAt) {
-      if (report.createdAt.toDate) {
-        const date = report.createdAt.toDate();
+      try {
+        const date = report.createdAt.toDate
+          ? report.createdAt.toDate()
+          : new Date(report.createdAt.seconds * 1000);
         formattedDate = date.toLocaleString("en-IN", {
           day: "2-digit",
           month: "short",
@@ -63,17 +67,7 @@ function renderPage() {
           minute: "2-digit",
           hour12: true,
         });
-      } else if (report.createdAt.seconds) {
-        const date = new Date(report.createdAt.seconds * 1000);
-        formattedDate = date.toLocaleString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        });
-      } else {
+      } catch {
         formattedDate = String(report.createdAt);
       }
     }
@@ -84,8 +78,8 @@ function renderPage() {
     card.innerHTML = `
       <img src="${report.images && report.images[0] ? report.images[0] : 'https://via.placeholder.com/70'}" alt="Report">
       <div class="report-info">
-        <h3>${report.category.charAt(0).toUpperCase() + report.category.slice(1)}
-          <span class="category-badge">${report.category}</span>
+        <h3>${report.category?.charAt(0).toUpperCase() + report.category?.slice(1) || "Report"}
+          <span class="category-badge">${report.category || "N/A"}</span>
         </h3>
         <p>${report.description || "No description"}</p>
         <p><strong>${report.address || "No address"}</strong></p>
@@ -100,10 +94,10 @@ function renderPage() {
     // 🔹 When clicked → save data to localStorage + go to details page
     card.addEventListener("click", () => {
       const selectedReport = {
-        title: report.category.charAt(0).toUpperCase() + report.category.slice(1) + " Issue",
+        title: `${report.category?.charAt(0).toUpperCase() + report.category?.slice(1)} Issue`,
         description: report.description || "No description",
         image: report.images && report.images[0] ? report.images[0] : "https://via.placeholder.com/300",
-        category: report.category,
+        category: report.category || "N/A",
         severity: report.severity || "Low",
         address: report.address || "No address",
         date: formattedDate.split(",")[0],
