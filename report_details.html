@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Details - EcoGuard</title>
+  <link rel="stylesheet" href="css/view-reports.css" />
+  <style>
+    /* Additional styles specific to report_details */
+    .report-header {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;
+    }
+
+    .report-header h2 {
+      margin: 0 0 10px 0;
+      color: #222;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      font-size: 0.9rem;
+      color: #666;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .badge.waste { background: #00916E; }
+    .badge.mosquito { background: #ff9800; }
+    .badge.high { background: #dc3545; }
+
+    .status-tag {
+      background: #ffc107;
+      color: #111;
+      font-weight: 500;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 0.85rem;
+    }
+
+    .report-body {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;
+    }
+
+    .report-body img {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 15px;
+      object-fit: cover;
+    }
+
+    .timeline {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;
+    }
+
+    .timeline h3 {
+      margin-top: 0;
+    }
+
+    .timeline-step {
+      position: relative;
+      padding-left: 25px;
+      margin-bottom: 15px;
+    }
+
+    .timeline-step::before {
+      content: "●";
+      color: #00916E;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .timeline-step small {
+      display: block;
+      color: #777;
+      margin-top: 3px;
+    }
+
+    .discussion {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 50px;
+    }
+
+    .comment {
+      border-left: 3px solid #00916E;
+      padding-left: 15px;
+      margin-bottom: 15px;
+    }
+
+    .comment strong {
+      display: block;
+      color: #222;
+    }
+
+    .comment small {
+      color: #777;
+    }
+
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .comment-form textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    .comment-form button {
+      background: #00916E;
+      color: #fff;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .comment-form button:hover {
+      background: #007a5a;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">EcoClean</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="view-reports.html" class="active">Browse Reports</a>
+      <a href="about.html">About</a>
+      <a href="report.html" class="btn">Report Issue</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Report Header -->
+    <section class="report-header">
+      <h2 id="reportTitle">Loading...</h2>
+      <div class="meta">
+        <span id="reportLocation">Central Park, Downtown District</span>
+        <span id="reportDate">September 28, 2025</span>
+        <span id="reportTime">2:30 PM</span>
+        <span id="reportStatus" class="status-tag">In Progress</span>
+        <span id="reportCategory" class="badge waste">Waste</span>
+        <span id="reportSeverity" class="badge high">High Severity</span>
+      </div>
+    </section>
+
+    <!-- Report Body -->
+    <section class="report-body">
+      <h3>Issue Description</h3>
+      <p id="reportDescription">
+        Loading report details...
+      </p>
+      <img id="reportImage" src="" alt="Report Image">
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline">
+      <h3>Status Timeline</h3>
+      <div class="timeline-step">
+        <strong>Report Submitted</strong>
+        <small id="submittedDate">September 28, 2025 - 2:30 PM</small>
+      </div>
+      <div class="timeline-step">
+        <strong>Under Review</strong>
+        <small id="reviewDate">September 28, 2025 - 4:15 PM</small>
+      </div>
+      <div class="timeline-step">
+        <strong>In Progress</strong>
+        <small id="progressDate">September 29, 2025 - 9:00 AM</small>
+      </div>
+      <div class="timeline-step">
+        <strong>Resolution Pending</strong>
+        <small id="pendingDate">Expected: October 2, 2025</small>
+      </div>
+    </section>
+
+    <!-- Community Discussion -->
+    <section class="discussion">
+      <h3>Community Discussion</h3>
+      <div id="commentsSection">
+        <div class="comment">
+          <strong>Sarah Anderson</strong>
+          <small>Local Resident · 2 hours ago</small>
+          <p>I walk through this park daily, and it’s definitely gotten worse over the past week. Thank you for reporting this!</p>
+        </div>
+
+        <div class="comment">
+          <strong>Municipal Waste Dept.</strong>
+          <small>Official Response · 1 hour ago</small>
+          <p>Thank you for bringing this to our attention. Cleanup scheduled for October 2nd.</p>
+        </div>
+
+        <div class="comment">
+          <strong>Mike Johnson</strong>
+          <small>Park Volunteer · 30 minutes ago</small>
+          <p>This is a recurring issue during busy weekends. Perhaps we need more bins in high-traffic areas.</p>
+        </div>
+      </div>
+
+      <form class="comment-form" id="commentForm">
+        <textarea placeholder="Share your thoughts..." required></textarea>
+        <button type="submit">Post Comment</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Load report data from localStorage
+    document.addEventListener('DOMContentLoaded', () => {
+      const report = JSON.parse(localStorage.getItem('selectedReport'));
+      if (!report) {
+        window.location.href = 'browse-reports.html';
+        return;
+      }
+
+      document.getElementById('reportTitle').textContent = report.title;
+      document.getElementById('reportDescription').textContent = report.description;
+      document.getElementById('reportImage').src = report.image;
+      document.getElementById('reportCategory').textContent = report.category;
+      document.getElementById('reportSeverity').textContent = report.severity + ' Severity';
+      document.getElementById('reportLocation').textContent = report.address;
+      document.getElementById('reportDate').textContent = report.date;
+      document.getElementById('reportTime').textContent = report.time;
+      document.getElementById('reportStatus').textContent = report.status;
+    });
+
+    // Comment submission (demo only)
+    const form = document.getElementById('commentForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const textarea = form.querySelector('textarea');
+      const text = textarea.value.trim();
+      if (text === '') return;
+
+      const comment = document.createElement('div');
+      comment.className = 'comment';
+      comment.innerHTML = `
+        <strong>Anonymous User</strong>
+        <small>Just now</small>
+        <p>${text}</p>
+      `;
+      document.getElementById('commentsSection').appendChild(comment);
+      textarea.value = '';
+    });
+  </script>
+</body>
+</html>

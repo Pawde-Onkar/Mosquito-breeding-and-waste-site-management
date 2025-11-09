@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Reports - EcoGuard</title>
+  <link rel="stylesheet" href="css/view-reports.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">EcoClean</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#" class="active">Browse Reports</a>
+     <a href="about.html">About</a>
+      <a href="report.html" class="btn">Report Issue</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Browse Reports</h2>
+    <div class="filters">
+      <select id="filterCategory">
+        <option value="all">All Categories</option>
+        <option value="waste">Waste</option>
+        <option value="mosquito">Mosquito</option>
+      </select>
+    </div>
+
+    <div id="reportsContainer" class="reports-container"></div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button id="prevPage" disabled>Previous</button>
+      <span id="pageNumbers"></span>
+      <button id="nextPage" disabled>Next</button>
+    </div>
+  </main>
+
+  <!-- Modal for full details -->
+  <div id="detailsModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="modalCategory"></h3>
+      <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+      <p><strong>Description:</strong></p>
+      <p id="modalDescription"></p>
+      <img id="modalImage" src="" alt="Report Image">
+    </div>
+  </div>
+
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/view-reports.js"></script>
+</body>
+</html>

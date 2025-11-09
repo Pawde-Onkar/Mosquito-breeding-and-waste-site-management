@@ -1,0 +1,4 @@
+# Ignore system and build files
+node_modules/
+.env
+firebase-debug.log
