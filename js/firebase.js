@@ -1,8 +1,10 @@
-// ✅ Firebase core imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ✅ Your Firebase config
+// ✅ firebase.js
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, addDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyC_YaGTyQbCkRbdLlKBiyw8lHyxPTa9G9o",
   authDomain: "eco-clean-7bd6d.firebaseapp.com",
@@ -13,8 +15,34 @@ const firebaseConfig = {
   measurementId: "G-P76NB77KVS"
 };
 
-// ✅ Initialize Firebase and export for others to use
+
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { app, db };
+// ✅ Function to save report
+async function saveReport(reportData, imageFile) {
+  try {
+    let imageUrl = "";
+    if (imageFile) {
+      const storageRef = ref(storage, `reports/${Date.now()}_${imageFile.name}`);
+      await uploadBytes(storageRef, imageFile);
+      imageUrl = await getDownloadURL(storageRef);
+    }
+
+    await addDoc(collection(db, "reports"), {
+      ...reportData,
+      images: imageUrl ? [imageUrl] : [],
+      createdAt: new Date().toISOString(),
+    });
+
+    alert("Report submitted successfully!");
+  } catch (error) {
+    console.error("Error saving report:", error);
+    alert("Failed to submit report.");
+  }
+}
+
+// ✅ Export what’s needed
+export { app, db, saveReport };
