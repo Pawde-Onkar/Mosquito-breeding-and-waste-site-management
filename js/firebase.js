@@ -6,8 +6,9 @@ import {
   addDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// ✅ your Firebase config (keep yours here)
+// ✅ Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyC_YaGTyQbCkRbdLlKBiyw8lHyxPTa9G9o",
   authDomain: "eco-clean-7bd6d.firebaseapp.com",
@@ -17,9 +18,11 @@ const firebaseConfig = {
   appId: "1:31293808247:web:3eb83b37ff745007b2b072",
   measurementId: "G-P76NB77KVS"
 };
-// Initialize Firebase
+
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 // 🧩 Convert File → Base64
 function convertToBase64(file) {
@@ -38,7 +41,7 @@ export async function saveReport(reportData, files, onProgress) {
     for (let i = 0; i < files.length; i++) {
       const base64 = await convertToBase64(files[i]);
       base64Images.push(base64);
-      if (onProgress) onProgress(i, 100); // simulate 100% progress per image
+      if (onProgress) onProgress(i, 100);
     }
 
     const docRef = await addDoc(collection(db, "reports"), {

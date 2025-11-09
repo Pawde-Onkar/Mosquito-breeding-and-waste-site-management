@@ -140,7 +140,28 @@
 </head>
 <body>
 
+
+
   <div class="page-header">
+  <!-- Navbar -->
+<nav style="background-color:#0048ce; color:white; display:flex; align-items:center; justify-content:space-between; padding:12px 24px; box-shadow:0 2px 8px rgba(0,0,0,0.15); position:sticky; top:0; z-index:100;">
+  <div style="font-size:20px; font-weight:bold;">Eco Clean </div>
+  <div style="display:flex; gap:18px; align-items:center;">
+    <a href="index.html" style="color:white; text-decoration:none; font-weight:500;">Home</a>
+    <a href="about.html" style="color:white; text-decoration:none; font-weight:500;">About</a>
+    <a href="report.html" style="color:white; text-decoration:none; font-weight:500;">Report</a>
+    <a href="view-reports.html" style="color:white; text-decoration:none; font-weight:500;">View Reports</a>
+    <button onclick="logout()" style="background:white; color:#2e7d32; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer;">Logout</button>
+  </div>
+</nav>
+
+<script>
+  function logout() {
+    alert('You have been logged out.');
+    window.location.href = 'login.html'; // redirect to login
+  }
+</script>
+<br>
     <h1>Report Environmental Issue</h1>
     <p>Help us maintain a healthier community by reporting waste management issues and mosquito breeding sites in your area.</p>
   </div>
